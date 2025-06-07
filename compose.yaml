@@ -1,9 +1,17 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:17-alpine
+    container_name: dicebound-postgres
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_USER: dicebound
+      POSTGRES_PASSWORD: dicebound
+      POSTGRES_DB: dicebound_db
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - '5432'
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

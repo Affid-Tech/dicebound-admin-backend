@@ -1,6 +1,7 @@
 databaseChangeLog:
+  - logicalFilePath: db/changelog/master.yaml
+
   - includeAll:
       path: "2025"
       relativeToChangelogFile: true
-      filter: sql
       errorIfMissingOrEmpty: true

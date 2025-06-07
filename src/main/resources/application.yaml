@@ -1,0 +1,4 @@
+spring:
+  application.name: backend
+  liquibase:
+    change-log: classpath:db/changelog/master.yaml
