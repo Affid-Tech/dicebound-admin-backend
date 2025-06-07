@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - includeAll:
+      path: "2025"
+      relativeToChangelogFile: true
+      filter: sql
+      errorIfMissingOrEmpty: true
