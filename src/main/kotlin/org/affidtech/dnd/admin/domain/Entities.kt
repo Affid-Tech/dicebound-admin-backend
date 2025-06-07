@@ -1,0 +1,181 @@
+package org.affidtech.dnd.admin.domain
+
+import jakarta.persistence.*
+import java.time.OffsetDateTime
+import java.util.*
+
+
+/**
+ * Базовая сущность с UUID‑ключом. Наследуется всеми JPA‑классами проекта.
+ */
+@MappedSuperclass
+abstract class BaseEntity(
+	/**
+	 * Первичный ключ. Генерируется на стороне приложения, чтобы REST‑клиент
+	 * мог ссылаться на объект до его сохранения (idempotent‑PUT / PATCH).
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	val id: UUID = UUID.randomUUID(),
+)
+
+
+/* --------------------------------------------------------------------- */
+/*                       CORE USER + ROLE PROFILES                       */
+/* --------------------------------------------------------------------- */
+
+@Entity
+@Table(name = "user_profile")
+data class UserEntity(
+	override val id: UUID = UUID.randomUUID(),
+	
+	@Column(nullable = false, length = 120)
+	var name: String,
+	
+	@Column(length = 255)
+	var email: String? = null,
+	
+	@Column(columnDefinition = "text")
+	var bio: String? = null,
+) : BaseEntity(id)
+
+@Entity
+@Table(name = "player_profile")
+data class PlayerProfileEntity(
+	@MapsId
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	val user: UserEntity,
+) : BaseEntity(user.id)
+
+@Entity
+@Table(name = "dungeon_master_profile")
+data class DungeonMasterProfileEntity(
+	@MapsId
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	val user: UserEntity,
+) : BaseEntity(user.id)
+
+@Entity
+@Table(name = "admin_profile")
+data class AdminProfileEntity(
+	@MapsId
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	val user: UserEntity,
+) : BaseEntity(user.id)
+
+/* --------------------------------------------------------------------- */
+/*                          ADVENTURE & SESSION                          */
+/* --------------------------------------------------------------------- */
+
+/**
+ * Enum отражает тип приключения (ваншот, мультишот, кампания).
+ */
+enum class AdventureType { ONESHOT, MULTISHOT, CAMPAIGN }
+
+@Entity
+@Table(name = "adventure")
+data class AdventureEntity(
+	override val id: UUID = UUID.randomUUID(),
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	var type: AdventureType,
+	
+	@Column(name = "game_system", nullable = false, columnDefinition = "text")
+	var gameSystem: String,
+	
+	@Column(length = 160, nullable = false)
+	var title: String,
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dm_id", nullable = false)
+	var dungeonMaster: UserEntity,
+	
+	@Column(columnDefinition = "text")
+	var description: String? = null,
+	
+	@Column(name = "start_level")
+	var startLevel: Short? = null,
+	
+	@Column(name = "min_players", nullable = false)
+	var minPlayers: Short,
+	
+	@Column(name = "max_players", nullable = false)
+	var maxPlayers: Short,
+	
+	@Column(name = "price_units")
+	var priceUnits: Int? = null,
+	
+	@OneToMany(mappedBy = "adventure", cascade = [CascadeType.ALL], orphanRemoval = true)
+	var sessions: MutableList<GameSessionEntity> = mutableListOf(),
+	
+	@OneToMany(mappedBy = "adventure", cascade = [CascadeType.ALL], orphanRemoval = true)
+	var signups: MutableList<AdventureSignupEntity> = mutableListOf(),
+) : BaseEntity(id)
+
+@Entity
+@Table(name = "game_session")
+data class GameSessionEntity(
+	override val id: UUID = UUID.randomUUID(),
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "adventure_id", nullable = false)
+	var adventure: AdventureEntity,
+	
+	@Column(name = "start_time", nullable = false)
+	var startTime: OffsetDateTime,
+	
+	@Column(name = "duration_hours", nullable = false)
+	var durationHours: Short,
+	
+	@Column(name = "link_foundry")
+	var linkFoundry: String? = null,
+	
+	@Column(columnDefinition = "text")
+	var notes: String? = null,
+) : BaseEntity(id)
+
+
+/**
+ * Enum отражает тип приключения (ваншот, мультишот, кампания).
+ */
+enum class AdventureSignupStatus { PENDING, APPROVED, CANCELED }
+
+@Entity
+@Table(
+	name = "adventure_signup"
+)
+data class AdventureSignupEntity(
+	override val id: UUID = UUID.randomUUID(),
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "adventure_id", nullable = false)
+	var adventure: AdventureEntity,
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	var user: UserEntity,
+	
+	@Column(nullable = false)
+	var status: AdventureSignupStatus = AdventureSignupStatus.PENDING,
+) : BaseEntity(id)
+
+/* --------------------------------------------------------------------- */
+/*                             CURRENCY RATE                             */
+/* --------------------------------------------------------------------- */
+
+@Entity
+@Table(name = "currency_rate")
+data class CurrencyRateEntity(
+	@Column(length = 3)
+	val currency: String,
+	
+	@Column(name = "ratio", nullable = false)
+	var ratio: Int,
+	
+	@Column(name = "updated_at", nullable = false)
+	var updatedAt: OffsetDateTime = OffsetDateTime.now(),
+) : BaseEntity(UUID.randomUUID())

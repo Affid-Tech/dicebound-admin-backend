@@ -1,5 +1,6 @@
 plugins {
 	kotlin("jvm") version "1.9.25"
+	kotlin("kapt") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.5.0"
 	id("io.spring.dependency-management") version "1.1.7"
@@ -26,13 +27,18 @@ repositories {
 }
 
 dependencies {
+	val mapstructVersion = "1.5.5.Final"
+	
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.springframework.session:spring-session-core")
+	implementation("org.mapstruct:mapstruct:$mapstructVersion")
+	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 	runtimeOnly("org.postgresql:postgresql")
