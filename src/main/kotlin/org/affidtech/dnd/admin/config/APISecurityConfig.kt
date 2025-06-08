@@ -21,7 +21,11 @@ class APISecurityConfig {
 					.requestMatchers("/error").permitAll()
 					.anyRequest().denyAll()
 			}
-			.httpBasic { }
+			.httpBasic { basic ->
+				basic.authenticationEntryPoint { _, response, _ ->
+					response.sendError(401, "Unauthorized")
+				}
+			}
 		return http.build()
 	}
 }
