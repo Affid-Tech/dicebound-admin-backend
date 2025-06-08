@@ -1,0 +1,111 @@
+### 1. Создать DM
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Ведущий",
+  "email": "dm@dnd.gg",
+  "bio": "Мастер подземелий"
+}
+> {%
+    client.global.set("dmId", response.body.id);
+%}
+
+### 2. Создать приключение
+POST http://localhost:8080/api/adventures
+Content-Type: application/json
+
+{
+  "type": "ONESHOT",
+  "gameSystem": "DND5E",
+  "title": "В подземельях session",
+  "dungeonMasterId": "{{dmId}}",
+  "description": "Тестовое приключение для сессий",
+  "startLevel": 1,
+  "minPlayers": 2,
+  "maxPlayers": 5,
+  "priceUnits": 300
+}
+> {%
+    client.global.set("adventureId", response.body.id);
+%}
+
+### 3. Создать игровую сессию и сохранить её id
+POST http://localhost:8080/api/sessions
+Content-Type: application/json
+
+{
+  "adventureId": "{{adventureId}}",
+  "startTime": "2025-07-20T19:00:00+02:00",
+  "durationHours": 4,
+  "linkFoundry": "https://foundry-vtt.com/game/session1",
+  "notes": "Первая сессия"
+}
+
+> {%
+    client.test("Created session", function() {
+        client.assert(response.status === 201, "Should return 201 Created");
+        client.global.set("sessionId", response.body.id);
+    });
+%}
+
+### 4. Получить сессию
+GET http://localhost:8080/api/sessions/{{sessionId}}
+
+> {%
+    client.test("Get session", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.id === client.global.get("sessionId"));
+    });
+%}
+
+### 5. Обновить сессию
+PATCH http://localhost:8080/api/sessions/{{sessionId}}
+Content-Type: application/json
+
+{
+  "notes": "Первая сессия — изменено"
+}
+
+> {%
+    client.test("Patch session", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.notes === "Первая сессия — изменено");
+    });
+%}
+
+### 6. Удалить сессию
+DELETE http://localhost:8080/api/sessions/{{sessionId}}
+
+> {%
+    client.test("Delete session", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 7. Проверить, что сессия удалена
+GET http://localhost:8080/api/sessions/{{sessionId}}
+
+> {%
+    client.test("Session not found after delete", function() {
+        client.assert(response.status === 404, "Should return 404 Not Found");
+    });
+%}
+
+### 8. Удалить приключение
+DELETE http://localhost:8080/api/adventures/{{adventureId}}
+
+> {%
+    client.test("Delete adventure", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 9. Удалить мастера
+DELETE http://localhost:8080/api/users/{{dmId}}
+
+> {%
+    client.test("Delete user", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}

@@ -1,0 +1,121 @@
+### 1. Создать пользователя
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Партнёр",
+  "email": "player@dnd.gg",
+  "bio": "Любит приключения"
+}
+> {%
+    client.global.set("userId", response.body.id);
+%}
+
+### 2. Создать ДМа
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "DM",
+  "email": "dm@dnd.gg",
+  "bio": "Готов вести"
+}
+> {%
+    client.global.set("dmId", response.body.id);
+%}
+
+### 3. Создать приключение
+POST http://localhost:8080/api/adventures
+Content-Type: application/json
+
+{
+  "type": "ONESHOT",
+  "gameSystem": "DND5E",
+  "title": "Signup Adventure",
+  "dungeonMasterId": "{{dmId}}",
+  "description": "Для проверки заявок",
+  "startLevel": 1,
+  "minPlayers": 2,
+  "maxPlayers": 6,
+  "priceUnits": 200
+}
+> {%
+    client.global.set("adventureId", response.body.id);
+%}
+
+### 4. Подать заявку
+POST http://localhost:8080/api/signups
+Content-Type: application/json
+
+{
+  "adventureId": "{{adventureId}}",
+  "userId": "{{userId}}"
+}
+
+> {%
+    client.test("Created signup", function() {
+        client.assert(response.status === 201, "Should return 201 Created");
+        client.global.set("signupId", response.body.id);
+    });
+%}
+
+### 5. Получить заявку
+GET http://localhost:8080/api/signups/{{signupId}}
+
+> {%
+    client.test("Get signup", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.id === client.global.get("signupId"));
+    });
+%}
+
+### 6. Одобрить заявку
+PATCH http://localhost:8080/api/signups/{{signupId}}
+Content-Type: application/json
+
+{
+  "status": "APPROVED"
+}
+
+> {%
+    client.test("Patch signup", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.status === "APPROVED");
+    });
+%}
+
+### 7. Удалить заявку
+DELETE http://localhost:8080/api/signups/{{signupId}}
+
+> {%
+    client.test("Delete signup", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 8. Проверить, что заявки нет
+GET http://localhost:8080/api/signups/{{signupId}}
+
+> {%
+    client.test("Signup not found after delete", function() {
+        client.assert(response.status === 404, "Should return 404 Not Found");
+    });
+%}
+
+### 9. Удалить приключение
+DELETE http://localhost:8080/api/adventures/{{adventureId}}
+
+> {%
+    client.test("Delete adventure", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 10. Удалить мастера
+DELETE http://localhost:8080/api/users/{{dmId}}
+
+> {%
+    client.test("Delete user", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}

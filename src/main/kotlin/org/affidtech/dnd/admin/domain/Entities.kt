@@ -9,16 +9,13 @@ import java.util.*
  * Базовая сущность с UUID‑ключом. Наследуется всеми JPA‑классами проекта.
  */
 @MappedSuperclass
-abstract class BaseEntity(
+interface BaseEntity {
 	/**
 	 * Первичный ключ. Генерируется на стороне приложения, чтобы REST‑клиент
 	 * мог ссылаться на объект до его сохранения (idempotent‑PUT / PATCH).
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	val id: UUID = UUID.randomUUID(),
-)
-
+	val id: UUID?
+}
 
 /* --------------------------------------------------------------------- */
 /*                       CORE USER + ROLE PROFILES                       */
@@ -27,7 +24,8 @@ abstract class BaseEntity(
 @Entity
 @Table(name = "user_profile")
 data class UserEntity(
-	override val id: UUID = UUID.randomUUID(),
+	@Id
+	override val id: UUID? = null,
 	
 	@Column(nullable = false, length = 120)
 	var name: String,
@@ -37,7 +35,7 @@ data class UserEntity(
 	
 	@Column(columnDefinition = "text")
 	var bio: String? = null,
-) : BaseEntity(id)
+) : BaseEntity
 
 @Entity
 @Table(name = "player_profile")
@@ -46,7 +44,10 @@ data class PlayerProfileEntity(
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	val user: UserEntity,
-) : BaseEntity(user.id)
+	
+	@Id
+	override val id: UUID? = null
+) : BaseEntity
 
 @Entity
 @Table(name = "dungeon_master_profile")
@@ -55,7 +56,10 @@ data class DungeonMasterProfileEntity(
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	val user: UserEntity,
-) : BaseEntity(user.id)
+	
+	@Id
+	override val id: UUID? = null
+) : BaseEntity
 
 @Entity
 @Table(name = "admin_profile")
@@ -64,7 +68,10 @@ data class AdminProfileEntity(
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	val user: UserEntity,
-) : BaseEntity(user.id)
+	
+	@Id
+	override val id: UUID? = null
+) : BaseEntity
 
 /* --------------------------------------------------------------------- */
 /*                          ADVENTURE & SESSION                          */
@@ -78,7 +85,8 @@ enum class AdventureType { ONESHOT, MULTISHOT, CAMPAIGN }
 @Entity
 @Table(name = "adventure")
 data class AdventureEntity(
-	override val id: UUID = UUID.randomUUID(),
+	@Id
+	override val id: UUID? = null,
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -114,12 +122,13 @@ data class AdventureEntity(
 	
 	@OneToMany(mappedBy = "adventure", cascade = [CascadeType.ALL], orphanRemoval = true)
 	var signups: MutableList<AdventureSignupEntity> = mutableListOf(),
-) : BaseEntity(id)
+) : BaseEntity
 
 @Entity
 @Table(name = "game_session")
 data class GameSessionEntity(
-	override val id: UUID = UUID.randomUUID(),
+	@Id
+	override val id: UUID? = null,
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "adventure_id", nullable = false)
@@ -136,7 +145,7 @@ data class GameSessionEntity(
 	
 	@Column(columnDefinition = "text")
 	var notes: String? = null,
-) : BaseEntity(id)
+) : BaseEntity
 
 
 /**
@@ -149,7 +158,8 @@ enum class AdventureSignupStatus { PENDING, APPROVED, CANCELED }
 	name = "adventure_signup"
 )
 data class AdventureSignupEntity(
-	override val id: UUID = UUID.randomUUID(),
+	@Id
+	override val id: UUID? = UUID.randomUUID(),
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "adventure_id", nullable = false)
@@ -161,7 +171,7 @@ data class AdventureSignupEntity(
 	
 	@Column(nullable = false)
 	var status: AdventureSignupStatus = AdventureSignupStatus.PENDING,
-) : BaseEntity(id)
+) : BaseEntity
 
 /* --------------------------------------------------------------------- */
 /*                             CURRENCY RATE                             */
@@ -170,6 +180,7 @@ data class AdventureSignupEntity(
 @Entity
 @Table(name = "currency_rate")
 data class CurrencyRateEntity(
+	@Id
 	@Column(length = 3)
 	val currency: String,
 	
@@ -177,5 +188,16 @@ data class CurrencyRateEntity(
 	var ratio: Int,
 	
 	@Column(name = "updated_at", nullable = false)
-	var updatedAt: OffsetDateTime = OffsetDateTime.now(),
-) : BaseEntity(UUID.randomUUID())
+	var updatedAt: OffsetDateTime? = null,
+) {
+	
+	@PrePersist
+	fun onCreate() {
+		if (updatedAt == null) updatedAt = OffsetDateTime.now()
+	}
+	
+	@PreUpdate
+	fun onUpdate() {
+		updatedAt = OffsetDateTime.now()
+	}
+}

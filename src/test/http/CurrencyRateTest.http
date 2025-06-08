@@ -1,0 +1,88 @@
+### 1. Удаляем, если есть (для чистого старта)
+DELETE http://localhost:8080/api/currency/USD
+
+### 2. Создаём новый курс
+POST http://localhost:8080/api/currency
+Content-Type: application/json
+
+{
+  "currency": "usd",
+  "ratio": 104
+}
+
+> {%
+    client.test("Created USD rate", function() {
+        client.assert(response.status === 201, "Should return 201 Created");
+    });
+%}
+
+### 3. Пробуем создать тот же курс ещё раз — ожидаем ошибку 409
+POST http://localhost:8080/api/currency
+Content-Type: application/json
+
+{
+  "currency": "USD",
+  "ratio": 104
+}
+
+> {%
+    client.test("Duplicate not allowed", function() {
+        client.assert(response.status === 409, "Should return 409 Conflict");
+    });
+%}
+
+### 4. Получаем по коду
+GET http://localhost:8080/api/currency/USD
+
+> {%
+    client.test("Get USD", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.currency === "USD", "Should be USD");
+        client.assert(response.body.ratio === 104, "Ratio should be 104");
+    });
+%}
+
+### 5. Обновляем курс (PATCH)
+PATCH http://localhost:8080/api/currency/USD
+Content-Type: application/json
+
+{
+  "ratio": 109
+}
+
+> {%
+    client.test("Patch USD", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.ratio === 109, "Ratio should be updated to 109");
+    });
+%}
+
+### 6. Получаем список всех валют
+GET http://localhost:8080/api/currency
+
+> {%
+    client.test("List currencies", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        const arr = response.body;
+        client.assert(arr.length >= 1, "Should have at least one currency");
+        client.assert(arr.some(e => e.currency === "USD"), "USD must be present");
+    });
+%}
+
+### 7. Удаляем курс
+DELETE http://localhost:8080/api/currency/USD
+
+> {%
+    client.test("Delete USD", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 8. Пробуем получить несуществующий курс — ожидаем 404
+GET http://localhost:8080/api/currency/USD
+
+> {%
+    client.test("Not found after delete", function() {
+        client.assert(response.status === 404, "Should return 404 Not Found");
+    });
+%}

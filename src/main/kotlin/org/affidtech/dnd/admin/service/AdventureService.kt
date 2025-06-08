@@ -34,7 +34,7 @@ class AdventureService(
 	fun create(dto: AdventureCreateDto): AdventureDto {
 		val dm = userRepository.findById(dto.dungeonMasterId)
 			.orElseThrow { NotFoundException(DUNGEON_MASTER_NOT_FOUND) }
-		val entity = adventureMapper.toEntity(dto, dm)
+		val entity = adventureMapper.toEntity(dto, dm).copy(id = UUID.randomUUID())
 		val saved = adventureRepository.save(entity)
 		return adventureMapper.toDto(saved)
 	}

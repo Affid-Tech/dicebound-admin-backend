@@ -1,0 +1,93 @@
+### 1. Создать пользователя-ДМа и сохранить его id
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Бреганов",
+  "email": "breganov@dnd.gg",
+  "bio": "DM"
+}
+> {%
+    client.global.set("dmId", response.body.id);
+%}
+
+
+### 2. Добавить роль DungeonMaster
+POST http://localhost:8080/api/users/{{dmId}}/roles/dungeon-master
+
+### 3. Создать приключение и сохранить его id
+POST http://localhost:8080/api/adventures
+Content-Type: application/json
+
+{
+  "type": "ONESHOT",
+  "gameSystem": "DND5E",
+  "title": "В подземельях Чикен Карри",
+  "dungeonMasterId": "{{dmId}}",
+  "description": "Первое приключение для новичков",
+  "startLevel": 1,
+  "minPlayers": 3,
+  "maxPlayers": 6,
+  "priceUnits": 500
+}
+> {%
+    client.test("Created adventure", function() {
+        client.assert(response.status === 201, "Should return 201 Created");
+        client.global.set("adventureId", response.body.id);
+    });
+%}
+
+### 4. Получить по id
+GET http://localhost:8080/api/adventures/{{adventureId}}
+
+> {%
+    client.test("Get adventure", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.id === client.global.get("adventureId"));
+    });
+%}
+
+
+### 5. Обновить приключение
+PATCH http://localhost:8080/api/adventures/{{adventureId}}
+Content-Type: application/json
+
+{
+  "description": "Теперь для опытных героев тоже"
+}
+
+> {%
+    client.test("Patch adventure", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        client.assert(response.body.description === "Теперь для опытных героев тоже");
+    });
+%}
+
+
+### 6. Удалить приключение
+DELETE http://localhost:8080/api/adventures/{{adventureId}}
+
+> {%
+    client.test("Delete adventure", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+
+### 7. Проверить, что приключение удалено
+GET http://localhost:8080/api/adventures/{{adventureId}}
+
+> {%
+    client.test("Adventure not found after delete", function() {
+        client.assert(response.status === 404, "Should return 404 Not Found");
+    });
+%}
+
+### 8. Удалить мастера
+DELETE http://localhost:8080/api/users/{{dmId}}
+
+> {%
+    client.test("Delete user", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}

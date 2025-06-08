@@ -1,0 +1,109 @@
+### 1. Создать пользователя и сохранить userId
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "name": "Минск",
+  "email": "minsk@dnd.gg",
+  "bio": "Ranger with a hamster"
+}
+
+> {%
+    client.test("Created user", function() {
+        client.assert(response.status === 201, "Should return 201 Created");
+        const body = response.body;
+        client.global.set("userId", body.id);
+    });
+%}
+
+### 2. Получить всех пользователей
+GET http://localhost:8080/api/users
+
+> {%
+    client.test("Get all users", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        const arr = response.body;
+        client.assert(arr.some(u => u.id === client.global.get("userId")), "Created user present");
+    });
+%}
+
+### 3. Получить пользователя по id
+GET http://localhost:8080/api/users/{{userId}}
+
+> {%
+    client.test("Get user by id", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        const body = response.body;
+        client.assert(body.id === client.global.get("userId"), "IDs should match");
+    });
+%}
+
+### 4. Обновить пользователя
+PATCH http://localhost:8080/api/users/{{userId}}
+Content-Type: application/json
+
+{
+  "bio": "Любит путешествовать по Фаэруну"
+}
+
+> {%
+    client.test("Patch user", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+        const body = response.body;
+        client.assert(body.bio === "Любит путешествовать по Фаэруну", "Bio updated");
+    });
+%}
+
+### 5. Добавить роль DungeonMaster
+POST http://localhost:8080/api/users/{{userId}}/roles/dungeon-master
+
+### 6. Добавить роль Player
+POST http://localhost:8080/api/users/{{userId}}/roles/player
+
+### 7. Добавить роль Admin
+POST http://localhost:8080/api/users/{{userId}}/roles/admin
+
+### 8. Получить пользователя с ролями
+GET http://localhost:8080/api/users/{{userId}}
+
+> {%
+    client.test("User has roles", function() {
+      client.assert(response.status === 200, "Should return 200 OK");
+      const body = response.body;
+      client.assert(body.roles.includes("PLAYER"), "Should have PLAYER role");
+      client.assert(body.roles.includes("DUNGEON_MASTER"), "Should have DUNGEON_MASTER role");
+      client.assert(body.roles.includes("ADMIN"), "Should have ADMIN role");
+    });
+%}
+
+### 9. Удалить роль игрока
+DELETE http://localhost:8080/api/users/{{userId}}/roles/player
+
+### 10. Проверить, что роли обновились
+GET http://localhost:8080/api/users/{{userId}}
+
+> {%
+client.test("User has no PLAYER role", function() {
+  client.assert(response.status === 200, "Should return 200 OK");
+  const body = response.body;
+  client.assert(!body.roles.includes("PLAYER"), "PLAYER role should be gone");
+});
+%}
+
+### 11. Удалить пользователя
+DELETE http://localhost:8080/api/users/{{userId}}
+
+> {%
+    client.test("Delete user", function() {
+        client.assert(response.status === 204, "Should return 204 No Content");
+    });
+%}
+
+### 12. Проверить, что пользователь удалён
+GET http://localhost:8080/api/users/{{userId}}
+
+> {%
+    client.test("User not found after delete", function() {
+        client.assert(response.status === 404, "Should return 404 Not Found");
+    });
+%}

@@ -1,5 +1,6 @@
 package org.affidtech.dnd.admin.service
 
+import jakarta.transaction.Transactional
 import org.affidtech.dnd.admin.domain.AdminProfileEntity
 import org.affidtech.dnd.admin.domain.DungeonMasterProfileEntity
 import org.affidtech.dnd.admin.domain.PlayerProfileEntity
@@ -16,7 +17,6 @@ import org.affidtech.dnd.admin.web.dto.UserDto
 import org.affidtech.dnd.admin.web.dto.UserPatchDto
 import org.affidtech.dnd.admin.web.dto.UserRole
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 private const val USER_NOT_FOUND = "User not found"
@@ -50,7 +50,7 @@ class UserService(
 	
 	@Transactional
 	fun create(dto: UserCreateDto): UserDto {
-		val entity = userMapper.toEntity(dto)
+		val entity = userMapper.toEntity(dto).copy(id = UUID.randomUUID())
 		val saved = userRepository.save(entity)
 		return userMapper.toDto(saved)
 	}

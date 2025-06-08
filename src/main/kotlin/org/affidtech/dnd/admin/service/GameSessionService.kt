@@ -35,7 +35,7 @@ class GameSessionService(
 	fun create(dto: GameSessionCreateDto): GameSessionDto {
 		val adventure = adventureRepository.findById(dto.adventureId)
 			.orElseThrow { NotFoundException("Adventure not found") }
-		val entity = gameSessionMapper.toEntity(dto, adventure)
+		val entity = gameSessionMapper.toEntity(dto, adventure).copy(id = UUID.randomUUID())
 		val saved = gameSessionRepository.save(entity)
 		return gameSessionMapper.toDto(saved)
 	}

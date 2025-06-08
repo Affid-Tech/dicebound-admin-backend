@@ -1,5 +1,6 @@
 package org.affidtech.dnd.admin.service
 
+import org.affidtech.dnd.admin.domain.AdventureSignupStatus
 import org.affidtech.dnd.admin.exception.AlreadyExistsException
 import org.affidtech.dnd.admin.exception.NotFoundException
 import org.affidtech.dnd.admin.repo.AdventureRepository
@@ -45,7 +46,7 @@ class AdventureSignupService(
 			.orElseThrow { NotFoundException("Adventure not found") }
 		val user = userRepository.findById(dto.userId)
 			.orElseThrow { NotFoundException("User not found") }
-		val entity = adventureSignupMapper.toEntity(dto, adventure, user)
+		val entity = adventureSignupMapper.toEntity(dto, adventure, user).copy(id = UUID.randomUUID(), status = AdventureSignupStatus.PENDING)
 		val saved = adventureSignupRepository.save(entity)
 		return adventureSignupMapper.toDto(saved)
 	}
