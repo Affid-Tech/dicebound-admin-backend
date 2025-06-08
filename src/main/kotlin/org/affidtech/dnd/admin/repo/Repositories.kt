@@ -36,28 +36,27 @@ interface AdventureRepository : JpaRepository<AdventureEntity, UUID> {
 // --------------------------- GameSession ------------------------------------
 interface GameSessionRepository : JpaRepository<GameSessionEntity, UUID> {
 	/** Возвращает сессии, начинающиеся позже указанного времени (по умолчанию – сейчас). */
-	@Query("""
+	@Query(
+		"""
         select s from GameSessionEntity s
         where s.startTime >= :from
         order by s.startTime asc
-    """)
+    """
+	)
 	fun findUpcoming(@Param("from") from: OffsetDateTime = OffsetDateTime.now()): List<GameSessionEntity>
 	
-	fun findByAdventureId(adventureId: UUID): List<GameSessionEntity>
+	fun findAllByAdventureId(adventureId: UUID): List<GameSessionEntity>
 }
 
 // --------------------------- Signup -----------------------------------------
 interface AdventureSignupRepository : JpaRepository<AdventureSignupEntity, UUID> {
-	fun countByAdventureId(adventureId: UUID): Long
-	
+	fun findAllByAdventureId(adventureId: UUID): List<AdventureSignupEntity>
+	fun findAllByUserId(userId: UUID): List<AdventureSignupEntity>
 	fun existsByAdventureIdAndUserId(adventureId: UUID, userId: UUID): Boolean
-	
-	fun findByAdventureIdAndStatus(adventureId: UUID, status: String): List<AdventureSignupEntity>
 }
 
 // --------------------------- Currency ---------------------------------------
 interface CurrencyRateRepository : JpaRepository<CurrencyRateEntity, String> {
-	// Возвращает ratio для нужного ISO-кода валюты
-	@Query("""select c.ratio from CurrencyRateEntity c where c.currency = :code""")
-	fun findRatioByCurrency(@Param("code") currency: String): Int?
+	fun findByCurrency(currency: String): CurrencyRateEntity?
+	fun existsByCurrency(currency: String): Boolean
 }

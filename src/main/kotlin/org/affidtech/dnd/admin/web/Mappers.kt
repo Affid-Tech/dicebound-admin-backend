@@ -33,7 +33,7 @@ interface AdventureMapper {
 
 @Mapper(componentModel = "spring")
 interface GameSessionMapper {
-	
+	@Mapping(source = "adventure.id", target = "adventureId")
 	fun toDto(entity: GameSessionEntity): GameSessionDto
 	
 	fun toEntity(dto: GameSessionCreateDto, @Context adventure: AdventureEntity): GameSessionEntity
@@ -44,7 +44,7 @@ interface GameSessionMapper {
 
 @Mapper(componentModel = "spring", uses = [UserMapper::class])
 interface AdventureSignupMapper {
-	
+	@Mapping(source = "adventure.id", target = "adventureId")
 	fun toDto(entity: AdventureSignupEntity): AdventureSignupDto
 	
 	fun toEntity(dto: AdventureSignupCreateDto, @Context adventure: AdventureEntity, @Context user: UserEntity): AdventureSignupEntity
@@ -55,7 +55,6 @@ interface AdventureSignupMapper {
 
 @Mapper(componentModel = "spring")
 interface CurrencyRateMapper {
-	
 	fun toDto(entity: CurrencyRateEntity): CurrencyRateDto
 	
 	fun toEntity(dto: CurrencyRateCreateDto): CurrencyRateEntity
