@@ -1,5 +1,6 @@
 ### 1. Создать DM
 POST http://localhost:8080/api/users
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -13,6 +14,7 @@ Content-Type: application/json
 
 ### 2. Создать приключение
 POST http://localhost:8080/api/adventures
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -32,6 +34,7 @@ Content-Type: application/json
 
 ### 3. Создать игровую сессию и сохранить её id
 POST http://localhost:8080/api/sessions
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -51,6 +54,7 @@ Content-Type: application/json
 
 ### 4. Получить сессию
 GET http://localhost:8080/api/sessions/{{sessionId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Get session", function() {
@@ -61,6 +65,7 @@ GET http://localhost:8080/api/sessions/{{sessionId}}
 
 ### 5. Обновить сессию
 PATCH http://localhost:8080/api/sessions/{{sessionId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -76,6 +81,7 @@ Content-Type: application/json
 
 ### 6. Удалить сессию
 DELETE http://localhost:8080/api/sessions/{{sessionId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete session", function() {
@@ -85,6 +91,7 @@ DELETE http://localhost:8080/api/sessions/{{sessionId}}
 
 ### 7. Проверить, что сессия удалена
 GET http://localhost:8080/api/sessions/{{sessionId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Session not found after delete", function() {
@@ -94,6 +101,7 @@ GET http://localhost:8080/api/sessions/{{sessionId}}
 
 ### 8. Удалить приключение
 DELETE http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete adventure", function() {
@@ -103,6 +111,7 @@ DELETE http://localhost:8080/api/adventures/{{adventureId}}
 
 ### 9. Удалить мастера
 DELETE http://localhost:8080/api/users/{{dmId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete user", function() {

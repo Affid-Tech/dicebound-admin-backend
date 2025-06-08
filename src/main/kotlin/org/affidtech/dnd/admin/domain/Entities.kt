@@ -170,7 +170,7 @@ data class AdventureSignupEntity(
 	var user: UserEntity,
 	
 	@Column(nullable = false)
-	var status: AdventureSignupStatus = AdventureSignupStatus.PENDING,
+	var status: AdventureSignupStatus? = AdventureSignupStatus.PENDING,
 ) : BaseEntity
 
 /* --------------------------------------------------------------------- */

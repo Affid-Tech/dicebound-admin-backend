@@ -1,5 +1,6 @@
 ### 1. Создать пользователя
 POST http://localhost:8080/api/users
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -13,6 +14,7 @@ Content-Type: application/json
 
 ### 2. Создать ДМа
 POST http://localhost:8080/api/users
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -26,6 +28,7 @@ Content-Type: application/json
 
 ### 3. Создать приключение
 POST http://localhost:8080/api/adventures
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -45,6 +48,7 @@ Content-Type: application/json
 
 ### 4. Подать заявку
 POST http://localhost:8080/api/signups
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -61,6 +65,7 @@ Content-Type: application/json
 
 ### 5. Получить заявку
 GET http://localhost:8080/api/signups/{{signupId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Get signup", function() {
@@ -71,6 +76,7 @@ GET http://localhost:8080/api/signups/{{signupId}}
 
 ### 6. Одобрить заявку
 PATCH http://localhost:8080/api/signups/{{signupId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -86,6 +92,7 @@ Content-Type: application/json
 
 ### 7. Удалить заявку
 DELETE http://localhost:8080/api/signups/{{signupId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete signup", function() {
@@ -95,6 +102,7 @@ DELETE http://localhost:8080/api/signups/{{signupId}}
 
 ### 8. Проверить, что заявки нет
 GET http://localhost:8080/api/signups/{{signupId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Signup not found after delete", function() {
@@ -104,6 +112,7 @@ GET http://localhost:8080/api/signups/{{signupId}}
 
 ### 9. Удалить приключение
 DELETE http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete adventure", function() {
@@ -113,6 +122,7 @@ DELETE http://localhost:8080/api/adventures/{{adventureId}}
 
 ### 10. Удалить мастера
 DELETE http://localhost:8080/api/users/{{dmId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete user", function() {

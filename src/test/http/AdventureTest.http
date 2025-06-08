@@ -1,6 +1,7 @@
 ### 1. Создать пользователя-ДМа и сохранить его id
 POST http://localhost:8080/api/users
 Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 {
   "name": "Бреганов",
@@ -14,9 +15,11 @@ Content-Type: application/json
 
 ### 2. Добавить роль DungeonMaster
 POST http://localhost:8080/api/users/{{dmId}}/roles/dungeon-master
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 ### 3. Создать приключение и сохранить его id
 POST http://localhost:8080/api/adventures
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -39,6 +42,7 @@ Content-Type: application/json
 
 ### 4. Получить по id
 GET http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Get adventure", function() {
@@ -50,6 +54,7 @@ GET http://localhost:8080/api/adventures/{{adventureId}}
 
 ### 5. Обновить приключение
 PATCH http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -66,6 +71,7 @@ Content-Type: application/json
 
 ### 6. Удалить приключение
 DELETE http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete adventure", function() {
@@ -76,6 +82,7 @@ DELETE http://localhost:8080/api/adventures/{{adventureId}}
 
 ### 7. Проверить, что приключение удалено
 GET http://localhost:8080/api/adventures/{{adventureId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Adventure not found after delete", function() {
@@ -85,6 +92,7 @@ GET http://localhost:8080/api/adventures/{{adventureId}}
 
 ### 8. Удалить мастера
 DELETE http://localhost:8080/api/users/{{dmId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete user", function() {

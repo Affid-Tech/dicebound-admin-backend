@@ -5,15 +5,23 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 
+
 @Configuration
-class OpenSecurityConfig {
+class APISecurityConfig {
+	
 	@Bean
 	fun filterChain(http: HttpSecurity): SecurityFilterChain {
 		http
-			.csrf { it.disable() }
-			.authorizeHttpRequests { auth ->
-				auth.anyRequest().permitAll()
+			.csrf { csrf ->
+				csrf.disable()
 			}
+			.authorizeHttpRequests { auth ->
+				auth
+					.requestMatchers("/api/**").authenticated()
+					.requestMatchers("/error").permitAll()
+					.anyRequest().denyAll()
+			}
+			.httpBasic { }
 		return http.build()
 	}
 }

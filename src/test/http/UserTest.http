@@ -1,5 +1,6 @@
 ### 1. Создать пользователя и сохранить userId
 POST http://localhost:8080/api/users
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -18,6 +19,7 @@ Content-Type: application/json
 
 ### 2. Получить всех пользователей
 GET http://localhost:8080/api/users
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Get all users", function() {
@@ -29,6 +31,7 @@ GET http://localhost:8080/api/users
 
 ### 3. Получить пользователя по id
 GET http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Get user by id", function() {
@@ -40,6 +43,7 @@ GET http://localhost:8080/api/users/{{userId}}
 
 ### 4. Обновить пользователя
 PATCH http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 Content-Type: application/json
 
 {
@@ -56,15 +60,19 @@ Content-Type: application/json
 
 ### 5. Добавить роль DungeonMaster
 POST http://localhost:8080/api/users/{{userId}}/roles/dungeon-master
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 ### 6. Добавить роль Player
 POST http://localhost:8080/api/users/{{userId}}/roles/player
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 ### 7. Добавить роль Admin
 POST http://localhost:8080/api/users/{{userId}}/roles/admin
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 ### 8. Получить пользователя с ролями
 GET http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("User has roles", function() {
@@ -78,9 +86,11 @@ GET http://localhost:8080/api/users/{{userId}}
 
 ### 9. Удалить роль игрока
 DELETE http://localhost:8080/api/users/{{userId}}/roles/player
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 ### 10. Проверить, что роли обновились
 GET http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
 client.test("User has no PLAYER role", function() {
@@ -92,6 +102,7 @@ client.test("User has no PLAYER role", function() {
 
 ### 11. Удалить пользователя
 DELETE http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("Delete user", function() {
@@ -101,6 +112,7 @@ DELETE http://localhost:8080/api/users/{{userId}}
 
 ### 12. Проверить, что пользователь удалён
 GET http://localhost:8080/api/users/{{userId}}
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
 
 > {%
     client.test("User not found after delete", function() {
