@@ -33,13 +33,4 @@ class AdventureSignupController(
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	fun delete(@PathVariable id: UUID) = adventureSignupService.delete(id)
 	
-	
-	@GetMapping("/api/adventures/{adventureId}/signups")
-	fun getSignupsForAdventure(@PathVariable adventureId: UUID): List<AdventureSignupDto> =
-		adventureSignupService.getAllByAdventure(adventureId)
-	
-	// User-specific
-	@GetMapping("/api/users/{userId}/signups")
-	fun getSignupsForUser(@PathVariable userId: UUID): List<AdventureSignupDto> =
-		adventureSignupService.getAllByUser(userId)
 }

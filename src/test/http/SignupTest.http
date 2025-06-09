@@ -74,6 +74,16 @@ Authorization: Basic YWRtaW46YWRtaW4xMjM=
     });
 %}
 
+### 5. Получить заявки
+GET http://localhost:8080/api/adventures/{{adventureId}}/signups
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+> {%
+    client.test("Get signups", function() {
+        client.assert(response.status === 200, "Should return 200 OK");
+    });
+%}
+
 ### 6. Одобрить заявку
 PATCH http://localhost:8080/api/signups/{{signupId}}
 Authorization: Basic YWRtaW46YWRtaW4xMjM=
