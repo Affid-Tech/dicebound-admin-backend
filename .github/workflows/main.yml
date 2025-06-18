@@ -35,15 +35,12 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           FILE_STORAGE_PATH=${{ secrets.FILE_STORAGE_PATH }}
           EOF
-
-      - name: Rename jar to admin.jar
-        run: cp build/libs/*.jar build/libs/admin.jar
       
       - name: List files after build
-        run: ls -l build/libs
+        run: ls -ln build/libs
 
       - name: List .env file
-        run: ls -l .env
+        run: ls -ln .env
 
       - name: Stop dndadmin service
         uses: appleboy/ssh-action@v0.1.10
@@ -54,15 +51,22 @@ jobs:
           script: |
             sudo systemctl stop dndadmin
 
-      - name: Upload admin.jar and .env to server
+      - name: Upload admin.jar to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: |
-            build/libs/admin.jar
-            .env
+          source: build/libs/admin.jar
+          target: ${{ secrets.APP_PATH }}
+          
+      - name: Upload .env to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: .env
           target: ${{ secrets.APP_PATH }}
 
       - name: Start dndadmin service
