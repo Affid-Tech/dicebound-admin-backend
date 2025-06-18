@@ -28,6 +28,7 @@ repositories {
 
 dependencies {
 	val mapstructVersion = "1.5.5.Final"
+	val dotenvVersion = "3.0.0"
 	
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -38,6 +39,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.springframework.session:spring-session-core")
+	implementation("io.github.cdimascio:dotenv-java:$dotenvVersion")
 	implementation("org.mapstruct:mapstruct:$mapstructVersion")
 	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -64,4 +66,8 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<Jar> {
+	archiveFileName.set("admin.jar")
 }

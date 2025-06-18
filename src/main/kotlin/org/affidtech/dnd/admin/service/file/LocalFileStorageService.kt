@@ -1,5 +1,6 @@
 package org.affidtech.dnd.admin.service.file
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -10,8 +11,10 @@ import java.nio.file.StandardCopyOption
 import java.util.UUID
 
 @Service
-class LocalFileStorageService : FileStorageService {
-	private val coverDir = Paths.get("covers")
+class LocalFileStorageService(
+	@Value("\${app.file-storage.path}") private val fileStoragePath: String,
+) : FileStorageService {
+	private val coverDir = Paths.get(fileStoragePath)
 	
 	override fun saveCover(adventureId: UUID, file: MultipartFile): String {
 		Files.createDirectories(coverDir)
