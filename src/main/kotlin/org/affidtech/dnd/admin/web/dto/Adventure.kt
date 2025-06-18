@@ -3,12 +3,14 @@ package org.affidtech.dnd.admin.web.dto
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
+import org.affidtech.dnd.admin.domain.AdventureStatus
 import org.affidtech.dnd.admin.domain.AdventureType
 import java.util.*
 
 data class AdventureDto(
 	val id: UUID,
 	val type: AdventureType,
+	val status: AdventureStatus,
 	val gameSystem: String,
 	val title: String,
 	val coverUrl: String?,
@@ -25,6 +27,7 @@ data class AdventureDto(
 // Для создания приключения (request)
 data class AdventureCreateDto(
 	@field:NotNull val type: AdventureType,
+	@field:NotNull val status: AdventureStatus,
 	@field:NotBlank val gameSystem: String,
 	@field:NotBlank val title: String,
 	@field:NotNull val dungeonMasterId: UUID,
@@ -37,6 +40,7 @@ data class AdventureCreateDto(
 
 data class AdventurePatchDto(
 	val type: AdventureType? = null,
+	val status: AdventureStatus? = null,
 	val gameSystem: String? = null,
 	val title: String? = null,
 	val dungeonMasterId: UUID? = null,

@@ -82,6 +82,8 @@ data class AdminProfileEntity(
  */
 enum class AdventureType { ONESHOT, MULTISHOT, CAMPAIGN }
 
+enum class AdventureStatus { PLANNED, RECRUITING, IN_PROGRESS, COMPLETED, CANCELLED }
+
 @Entity
 @Table(name = "adventure")
 data class AdventureEntity(
@@ -91,6 +93,10 @@ data class AdventureEntity(
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	var type: AdventureType,
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	var status: AdventureStatus = AdventureStatus.PLANNED,
 	
 	@Column(name = "game_system", nullable = false, columnDefinition = "text")
 	var gameSystem: String,
