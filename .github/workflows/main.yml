@@ -35,6 +35,9 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           FILE_STORAGE_PATH=${{ secrets.FILE_STORAGE_PATH }}
           EOF
+
+      - name: Rename jar to admin.jar
+        run: cp build/libs/*.jar build/libs/admin.jar
       
       - name: List files after build
         run: ls -l build/libs
