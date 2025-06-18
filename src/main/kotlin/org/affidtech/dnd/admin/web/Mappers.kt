@@ -21,18 +21,18 @@ interface UserMapper {
 	componentModel = "spring",
 	uses = [UserMapper::class, GameSessionMapper::class, AdventureSignupMapper::class]
 )
-interface AdventureMapper {
+abstract class AdventureMapper {
 	
-	fun toDto(entity: AdventureEntity): AdventureDto
+	abstract fun toDto(entity: AdventureEntity): AdventureDto
 	
 	@Mapping(target = "sessions", expression = "java(new ArrayList())") // заполняем руками
 	@Mapping(target = "signups", expression = "java(new ArrayList())") // заполняем руками
 	@Mapping(target = "dungeonMaster", expression = "java(dm)") // dm — заранее найденный dungeonMaster
-	fun toEntity(dto: AdventureCreateDto, @Context dm: UserEntity): AdventureEntity
+	abstract fun toEntity(dto: AdventureCreateDto, @Context dm: UserEntity): AdventureEntity
 	
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	@Mapping(target = "dungeonMaster", source = "dungeonMasterId", conditionExpression = "java(dm != null)") // если dungeonMasterId в patch — передаём нового dm, иначе null
-	fun updateEntityFromPatch(dto: AdventurePatchDto, @MappingTarget entity: AdventureEntity, @Context dm: UserEntity?)
+	abstract fun updateEntityFromPatch(dto: AdventurePatchDto, @MappingTarget entity: AdventureEntity, @Context dm: UserEntity?)
 	
 	fun provideDungeonMaster(dungeonMasterId: UUID, @Context dm: UserEntity): UserEntity{
 		return dm

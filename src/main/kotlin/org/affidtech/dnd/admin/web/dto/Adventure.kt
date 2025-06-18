@@ -11,6 +11,7 @@ data class AdventureDto(
 	val type: AdventureType,
 	val gameSystem: String,
 	val title: String,
+	val coverUrl: String?,
 	val dungeonMaster: UserDto,
 	val description: String?,
 	val startLevel: Short?,

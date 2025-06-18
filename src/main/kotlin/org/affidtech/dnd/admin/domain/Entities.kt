@@ -98,6 +98,9 @@ data class AdventureEntity(
 	@Column(length = 160, nullable = false)
 	var title: String,
 	
+	@Column(nullable = true)
+	var coverUrl: String?,
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dm_id", nullable = false)
 	var dungeonMaster: UserEntity,
@@ -170,6 +173,7 @@ data class AdventureSignupEntity(
 	var user: UserEntity,
 	
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	var status: AdventureSignupStatus? = AdventureSignupStatus.PENDING,
 ) : BaseEntity
 

@@ -59,4 +59,12 @@ class AdventureService(
 		if (!adventureRepository.existsById(id)) throw NotFoundException(ADVENTURE_NOT_FOUND)
 		adventureRepository.deleteById(id)
 	}
+	
+	@Transactional
+	fun updateCoverUrl(adventureId: UUID, url: String) {
+		with(adventureRepository.findById(adventureId).orElseThrow { NotFoundException(ADVENTURE_NOT_FOUND) }) {
+			coverUrl = url
+			adventureRepository.save(this)
+		}
+	}
 }
