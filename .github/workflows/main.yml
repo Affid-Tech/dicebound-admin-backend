@@ -35,6 +35,12 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           FILE_STORAGE_PATH=${{ secrets.FILE_STORAGE_PATH }}
           EOF
+      
+      - name: List files after build
+        run: ls -l build/libs
+
+      - name: List .env file
+        run: ls -l .env
 
       - name: Stop dndadmin service
         uses: appleboy/ssh-action@v0.1.10
