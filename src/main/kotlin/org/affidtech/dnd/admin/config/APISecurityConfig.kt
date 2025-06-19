@@ -20,7 +20,6 @@ class APISecurityConfig {
 					.requestMatchers("/api/**").authenticated()
 					.requestMatchers("/error").permitAll()
 					.requestMatchers("/files/**").permitAll()
-					.requestMatchers("/files/*").permitAll()
 					.anyRequest().denyAll()
 			}
 			.httpBasic { basic ->

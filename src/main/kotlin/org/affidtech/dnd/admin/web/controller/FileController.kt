@@ -20,8 +20,7 @@ class FileController(val storage: FileStorageService, val configPrinter: ConfigP
 	}
 	
 	@GetMapping("/files/test")
-	fun testConfig(): String {
+	fun testConfig() {
 		configPrinter.printConfig()
-		return "OK"
 	}
 }
