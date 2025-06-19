@@ -54,22 +54,15 @@ jobs:
           script: |
             sudo systemctl stop dndadmin
 
-      - name: Upload admin.jar to server
+      - name: Upload admin.jar and .env to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: admin.jar
-          target: ${{ secrets.APP_PATH }}
-          
-      - name: Upload .env to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: .env
+          source: |
+            admin.jar
+            .env
           target: ${{ secrets.APP_PATH }}
 
       - name: Start dndadmin service
