@@ -35,6 +35,9 @@ jobs:
           ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
           FILE_STORAGE_PATH=${{ secrets.FILE_STORAGE_PATH }}
           EOF
+
+      - name: Rename jar to admin.jar
+        run: cp build/libs/*.jar admin.jar
       
       - name: List files after build
         run: ls -ln build/libs
@@ -57,7 +60,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: build/libs/admin.jar
+          source: admin.jar
           target: ${{ secrets.APP_PATH }}
           
       - name: Upload .env to server
