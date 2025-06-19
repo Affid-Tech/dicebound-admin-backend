@@ -17,16 +17,7 @@ class APISecurityConfig {
 			}
 			.authorizeHttpRequests { auth ->
 				auth
-					.requestMatchers("/api/**").authenticated()
-					.requestMatchers("/error").permitAll()
-					.requestMatchers("/files/**").permitAll()
-					.requestMatchers("/files/*").permitAll()
-					.anyRequest().denyAll()
-			}
-			.httpBasic { basic ->
-				basic.authenticationEntryPoint { _, response, _ ->
-					response.sendError(401, "Unauthorized")
-				}
+					.anyRequest().permitAll()
 			}
 		return http.build()
 	}
