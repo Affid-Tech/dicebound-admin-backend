@@ -11,12 +11,14 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      max-lifetime: 1800000
+      minimum-idle: 0
+      idle-timeout: 10000  # 10 seconds
+      max-lifetime: 30000  # 30 seconds
+      connection-timeout: 3000
   security:
     user:
       name: ${ADMIN_USERNAME}
       password: ${ADMIN_PASSWORD}
-
 
 app:
   file-storage:

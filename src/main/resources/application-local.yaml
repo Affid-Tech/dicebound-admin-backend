@@ -3,6 +3,12 @@ spring:
     user:
       name: admin
       password: admin123
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dicebound_db
+    username: dicebound
+    password: dicebound
+    hikari:
+      max-lifetime: 1800000
 
 app:
   file-storage:
