@@ -1,12 +1,18 @@
 package org.affidtech.dnd.admin.service
 
+import org.affidtech.dnd.admin.domain.AdventureStatus
+import org.affidtech.dnd.admin.domain.AdventureType
 import org.affidtech.dnd.admin.exception.NotFoundException
 import org.affidtech.dnd.admin.repo.AdventureRepository
+import org.affidtech.dnd.admin.repo.AdventureSpecifications
 import org.affidtech.dnd.admin.repo.UserRepository
 import org.affidtech.dnd.admin.web.AdventureMapper
 import org.affidtech.dnd.admin.web.dto.AdventureCreateDto
 import org.affidtech.dnd.admin.web.dto.AdventureDto
 import org.affidtech.dnd.admin.web.dto.AdventurePatchDto
+import org.affidtech.dnd.admin.web.dto.PageResponseDto
+import org.affidtech.dnd.admin.web.dto.toPageResponseDto
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -16,6 +22,7 @@ private const val ADVENTURE_NOT_FOUND = "Adventure not found"
 private const val DUNGEON_MASTER_NOT_FOUND = "Dungeon master not found"
 
 @Service
+@Transactional(readOnly = true)
 class AdventureService(
 	private val adventureRepository: AdventureRepository,
 	private val userRepository: UserRepository,
@@ -24,6 +31,23 @@ class AdventureService(
 	
 	fun getAll(): List<AdventureDto> =
 		adventureRepository.findAll().map(adventureMapper::toDto)
+	
+	fun search(
+		pageable: Pageable,
+		statuses: List<AdventureStatus>?,
+		types: List<AdventureType>?,
+		dungeonMasterIds: List<UUID>?
+	): PageResponseDto<AdventureDto> {
+		val spec = AdventureSpecifications.byFilters(
+			types = types,
+			statuses = statuses,
+			dungeonMasterIds = dungeonMasterIds
+		)
+		
+		val page = adventureRepository.findAll(spec, pageable)
+		
+		return page.map { adventureMapper.toDto(it) }.toPageResponseDto()
+	}
 	
 	fun getById(id: UUID): AdventureDto =
 		adventureRepository.findById(id)
