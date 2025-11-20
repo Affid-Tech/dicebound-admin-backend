@@ -1,6 +1,7 @@
 package org.affidtech.dnd.admin.domain
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Formula
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -131,6 +132,20 @@ data class AdventureEntity(
 	
 	@OneToMany(mappedBy = "adventure", cascade = [CascadeType.ALL], orphanRemoval = true)
 	var signups: MutableList<AdventureSignupEntity> = mutableListOf(),
+	
+	@Formula(
+		value = """
+            case status
+                when 'PLANNED'      then 0
+                when 'RECRUITING'   then 1
+                when 'IN_PROGRESS'  then 2
+                when 'CANCELLED'    then 3
+                when 'COMPLETED'    then 4
+                else 999
+            end
+        """
+	)
+	val statusSortOrder: Int? = null,
 ) : BaseEntity
 
 @Entity

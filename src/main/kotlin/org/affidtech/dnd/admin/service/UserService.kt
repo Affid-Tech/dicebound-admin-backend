@@ -1,6 +1,5 @@
 package org.affidtech.dnd.admin.service
 
-import jakarta.transaction.Transactional
 import org.affidtech.dnd.admin.domain.AdminProfileEntity
 import org.affidtech.dnd.admin.domain.DungeonMasterProfileEntity
 import org.affidtech.dnd.admin.domain.PlayerProfileEntity
@@ -12,16 +11,22 @@ import org.affidtech.dnd.admin.repo.DungeonMasterProfileRepository
 import org.affidtech.dnd.admin.repo.PlayerProfileRepository
 import org.affidtech.dnd.admin.repo.UserRepository
 import org.affidtech.dnd.admin.web.UserMapper
+import org.affidtech.dnd.admin.web.dto.PageResponseDto
+import org.affidtech.dnd.admin.web.dto.PlayerCreateDto
 import org.affidtech.dnd.admin.web.dto.UserCreateDto
 import org.affidtech.dnd.admin.web.dto.UserDto
 import org.affidtech.dnd.admin.web.dto.UserPatchDto
 import org.affidtech.dnd.admin.web.dto.UserRole
+import org.affidtech.dnd.admin.web.dto.toPageResponseDto
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 private const val USER_NOT_FOUND = "User not found"
 
 @Service
+@Transactional(readOnly = true)
 class UserService(
 	private val userRepository: UserRepository,
 	private val userMapper: UserMapper,
@@ -38,6 +43,25 @@ class UserService(
 			.map { user -> toUserDtoWithRoles(user) }
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
 	
+	fun search(pageable: Pageable, role: UserRole?, keyword: String?): PageResponseDto<UserDto> {
+		val page = when (role) {
+			null -> {
+				if (keyword.isNullOrBlank()) {
+					userRepository.findAll(pageable)
+				} else {
+					userRepository.search(keyword, pageable)
+				}
+			}
+			UserRole.PLAYER -> playerProfileRepository.searchUsers(keyword, pageable)
+			UserRole.DUNGEON_MASTER -> dungeonMasterProfileRepository.findUsers( pageable)
+			UserRole.ADMIN -> adminProfileRepository.findUsers(pageable)
+		}
+		
+		return page
+			.map { user -> toUserDtoWithRoles(user) }
+			.toPageResponseDto()
+	}
+	
 	fun toUserDtoWithRoles(user: UserEntity): UserDto =
 		userMapper.toDto(user)
 			.copy(
@@ -48,14 +72,35 @@ class UserService(
 				}
 			)
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun create(dto: UserCreateDto): UserDto {
 		val entity = userMapper.toEntity(dto).copy(id = UUID.randomUUID())
 		val saved = userRepository.save(entity)
 		return userMapper.toDto(saved)
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
+	fun createPlayer(dto: PlayerCreateDto): UserDto {
+		val user = userRepository.save(
+			UserEntity(
+				id = UUID.randomUUID(),
+				name = dto.name,
+				email = dto.email,
+				bio = dto.bio
+			)
+		)
+		
+		// создаём профиль игрока, чтобы он сразу считался PLAYER
+		playerProfileRepository.save(
+			PlayerProfileEntity(
+				user = user,
+			)
+		)
+		
+		return toUserDtoWithRoles(user)
+	}
+	
+	@Transactional(readOnly = false)
 	fun patch(id: UUID, dto: UserPatchDto): UserDto {
 		val user = userRepository.findById(id)
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
@@ -64,13 +109,13 @@ class UserService(
 		return userMapper.toDto(saved)
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun delete(id: UUID) {
 		if (!userRepository.existsById(id)) throw NotFoundException(USER_NOT_FOUND)
 		userRepository.deleteById(id)
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun addPlayerProfile(userId: UUID) {
 		val user = userRepository.findById(userId)
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
@@ -79,12 +124,12 @@ class UserService(
 		playerProfileRepository.save(PlayerProfileEntity(user))
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun removePlayerProfile(userId: UUID) {
 		playerProfileRepository.deleteByUserId(userId)
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun addDungeonMasterProfile(userId: UUID) {
 		val user = userRepository.findById(userId)
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
@@ -93,12 +138,12 @@ class UserService(
 		dungeonMasterProfileRepository.save(DungeonMasterProfileEntity(user))
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun removeDungeonMasterProfile(userId: UUID) {
 		dungeonMasterProfileRepository.deleteByUserId(userId)
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun addAdminProfile(userId: UUID) {
 		val user = userRepository.findById(userId)
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
@@ -107,7 +152,7 @@ class UserService(
 		adminProfileRepository.save(AdminProfileEntity(user))
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	fun removeAdminProfile(userId: UUID) {
 		adminProfileRepository.deleteByUserId(userId)
 	}
