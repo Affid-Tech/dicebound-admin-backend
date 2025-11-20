@@ -6,6 +6,7 @@ import org.affidtech.dnd.admin.service.AdventureService
 import org.affidtech.dnd.admin.service.file.FileStorageService
 import org.affidtech.dnd.admin.web.dto.AdventureCreateDto
 import org.affidtech.dnd.admin.web.dto.AdventureDto
+import org.affidtech.dnd.admin.web.dto.AdventureLightDto
 import org.affidtech.dnd.admin.web.dto.AdventurePatchDto
 import org.affidtech.dnd.admin.web.dto.PageResponseDto
 import org.springframework.data.domain.Pageable
@@ -27,7 +28,7 @@ class AdventureController(
 		@RequestParam(required = false) statuses: List<AdventureStatus>?,
 		@RequestParam(required = false) types: List<AdventureType>?,
 		@RequestParam(required = false) dungeonMasterIds: List<UUID>?
-	): PageResponseDto<AdventureDto> =
+	): PageResponseDto<AdventureLightDto> =
 		adventureService.search(
 			pageable = pageable,
 			statuses = statuses,

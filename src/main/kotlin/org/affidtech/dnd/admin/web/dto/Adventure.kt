@@ -24,6 +24,22 @@ data class AdventureDto(
 	val signups: List<AdventureSignupDto> = listOf()
 )
 
+data class AdventureLightDto(
+	val id: UUID,
+	val type: AdventureType,
+	val status: AdventureStatus,
+	val gameSystem: String,
+	val title: String,
+	val coverUrl: String?,
+	val dungeonMaster: UserDto,
+	val description: String?,
+	val startLevel: Short?,
+	val minPlayers: Short,
+	val maxPlayers: Short,
+	val priceUnits: Int?
+)
+
+
 // Для создания приключения (request)
 data class AdventureCreateDto(
 	@field:NotNull val type: AdventureType,

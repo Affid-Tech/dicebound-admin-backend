@@ -25,6 +25,8 @@ abstract class AdventureMapper {
 	
 	abstract fun toDto(entity: AdventureEntity): AdventureDto
 	
+	abstract fun toLightDto(entity: AdventureEntity): AdventureLightDto
+	
 	@Mapping(target = "sessions", expression = "java(new ArrayList())") // заполняем руками
 	@Mapping(target = "signups", expression = "java(new ArrayList())") // заполняем руками
 	@Mapping(target = "dungeonMaster", expression = "java(dm)") // dm — заранее найденный dungeonMaster

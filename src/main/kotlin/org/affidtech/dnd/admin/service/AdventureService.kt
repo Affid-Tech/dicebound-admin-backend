@@ -9,6 +9,7 @@ import org.affidtech.dnd.admin.repo.UserRepository
 import org.affidtech.dnd.admin.web.AdventureMapper
 import org.affidtech.dnd.admin.web.dto.AdventureCreateDto
 import org.affidtech.dnd.admin.web.dto.AdventureDto
+import org.affidtech.dnd.admin.web.dto.AdventureLightDto
 import org.affidtech.dnd.admin.web.dto.AdventurePatchDto
 import org.affidtech.dnd.admin.web.dto.PageResponseDto
 import org.affidtech.dnd.admin.web.dto.toPageResponseDto
@@ -37,7 +38,7 @@ class AdventureService(
 		statuses: List<AdventureStatus>?,
 		types: List<AdventureType>?,
 		dungeonMasterIds: List<UUID>?
-	): PageResponseDto<AdventureDto> {
+	): PageResponseDto<AdventureLightDto> {
 		val spec = AdventureSpecifications.byFilters(
 			types = types,
 			statuses = statuses,
@@ -46,7 +47,7 @@ class AdventureService(
 		
 		val page = adventureRepository.findAll(spec, pageable)
 		
-		return page.map { adventureMapper.toDto(it) }.toPageResponseDto()
+		return page.map { adventureMapper.toLightDto(it) }.toPageResponseDto()
 	}
 	
 	fun getById(id: UUID): AdventureDto =
