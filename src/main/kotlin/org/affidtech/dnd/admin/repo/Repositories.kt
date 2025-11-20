@@ -43,6 +43,8 @@ interface PlayerProfileRepository : JpaRepository<PlayerProfileEntity, UUID> {
 	)
 	fun searchUsers(keyword: String?, pageable: Pageable): Page<UserEntity>
 	
+	fun findAllByUserIdIn(userIds: Collection<UUID>): List<PlayerProfileEntity>
+	
 }
 
 interface DungeonMasterProfileRepository : JpaRepository<DungeonMasterProfileEntity, UUID> {
@@ -51,6 +53,8 @@ interface DungeonMasterProfileRepository : JpaRepository<DungeonMasterProfileEnt
 	
 	@Query("select p.user from DungeonMasterProfileEntity p")
 	fun findUsers(pageable: Pageable): Page<UserEntity>
+	
+	fun findAllByUserIdIn(userIds: Collection<UUID>): List<DungeonMasterProfileEntity>
 }
 
 interface AdminProfileRepository : JpaRepository<AdminProfileEntity, UUID> {
@@ -59,6 +63,8 @@ interface AdminProfileRepository : JpaRepository<AdminProfileEntity, UUID> {
 	
 	@Query("select p.user from AdminProfileEntity p")
 	fun findUsers(pageable: Pageable): Page<UserEntity>
+	
+	fun findAllByUserIdIn(userIds: Collection<UUID>): List<AdminProfileEntity>
 }
 
 

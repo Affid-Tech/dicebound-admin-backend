@@ -18,6 +18,7 @@ import org.affidtech.dnd.admin.web.dto.UserDto
 import org.affidtech.dnd.admin.web.dto.UserPatchDto
 import org.affidtech.dnd.admin.web.dto.UserRole
 import org.affidtech.dnd.admin.web.dto.toPageResponseDto
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,32 +35,58 @@ class UserService(
 	private val dungeonMasterProfileRepository: DungeonMasterProfileRepository,
 	private val adminProfileRepository: AdminProfileRepository
 ) {
-	
-	fun getAll(): List<UserDto> =
-		userRepository.findAll().map { user -> toUserDtoWithRoles(user) }
-	
+
 	fun getById(id: UUID): UserDto =
 		userRepository.findById(id)
 			.map { user -> toUserDtoWithRoles(user) }
 			.orElseThrow { NotFoundException(USER_NOT_FOUND) }
 	
+	@Transactional(readOnly = true)
 	fun search(pageable: Pageable, role: UserRole?, keyword: String?): PageResponseDto<UserDto> {
-		val page = when (role) {
-			null -> {
-				if (keyword.isNullOrBlank()) {
-					userRepository.findAll(pageable)
-				} else {
-					userRepository.search(keyword, pageable)
-				}
-			}
-			UserRole.PLAYER -> playerProfileRepository.searchUsers(keyword, pageable)
-			UserRole.DUNGEON_MASTER -> dungeonMasterProfileRepository.findUsers( pageable)
-			UserRole.ADMIN -> adminProfileRepository.findUsers(pageable)
+		val page: Page<UserEntity> = when (role) {
+			null -> if (keyword.isNullOrBlank())
+				userRepository.findAll(pageable)
+			else
+				userRepository.search(keyword, pageable)
+			
+			UserRole.PLAYER ->
+				playerProfileRepository.searchUsers(keyword, pageable)
+			
+			UserRole.DUNGEON_MASTER ->
+				dungeonMasterProfileRepository.findUsers( pageable)
+			
+			UserRole.ADMIN ->
+				adminProfileRepository.findUsers(pageable)
 		}
 		
-		return page
-			.map { user -> toUserDtoWithRoles(user) }
-			.toPageResponseDto()
+		val users: List<UserEntity> = page.content
+		val ids = users.mapNotNull { it.id }
+		
+		// одним махом вытаскиваем профили
+		val playerIds = playerProfileRepository.findAllByUserIdIn(ids)
+			.mapNotNull { it.user.id }
+			.toSet()
+		
+		val dmIds = dungeonMasterProfileRepository.findAllByUserIdIn(ids)
+			.mapNotNull { it.user.id }
+			.toSet()
+		
+		val adminIds = adminProfileRepository.findAllByUserIdIn(ids)
+			.mapNotNull { it.user.id }
+			.toSet()
+		
+		val dtoPage = page.map { user ->
+			val roles = buildList {
+				user.id?.let {
+					if (it in playerIds) add(UserRole.PLAYER)
+					if (it in dmIds) add(UserRole.DUNGEON_MASTER)
+					if (it in adminIds) add(UserRole.ADMIN)
+				}
+			}
+			userMapper.toDto(user).copy(roles = roles)
+		}
+		
+		return dtoPage.toPageResponseDto()
 	}
 	
 	fun toUserDtoWithRoles(user: UserEntity): UserDto =
