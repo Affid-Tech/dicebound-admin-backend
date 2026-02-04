@@ -1,10 +1,10 @@
 plugins {
-	kotlin("jvm") version "1.9.25"
-	kotlin("kapt") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
-	id("org.springframework.boot") version "3.5.0"
+	kotlin("jvm") version "2.2.0"
+	kotlin("kapt") version "2.2.0"
+	kotlin("plugin.spring") version "2.2.0"
+	id("org.springframework.boot") version "4.0.0"
 	id("io.spring.dependency-management") version "1.1.7"
-	kotlin("plugin.jpa") version "1.9.25"
+	kotlin("plugin.jpa") version "2.2.0"
 }
 
 group = "org.affidtech.dnd"
@@ -44,6 +44,7 @@ dependencies {
 	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+	implementation("org.springframework.data:spring-data-commons")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

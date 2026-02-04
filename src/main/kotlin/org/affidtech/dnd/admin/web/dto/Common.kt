@@ -10,7 +10,7 @@ data class PageResponseDto<T>(
 	val totalPages: Int
 )
 
-fun <T> Page<T>.toPageResponseDto(): PageResponseDto<T> =
+fun <T: Any> Page<T>.toPageResponseDto(): PageResponseDto<T> =
 	PageResponseDto(
 		content = this.content,
 		page = this.number,
